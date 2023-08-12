@@ -6,26 +6,23 @@ import Select from '../Select';
 import Button from '../Button';
 import FormGroup from '../FormGroup';
 import isEmailValid from '../../utils/isEmailValid';
+import UseErrors from '../../hooks/useErrors';
 
 export default function ContactForm({ buttonLabel }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [category, setCategory] = useState('');
-  const [errors, setErrors] = useState([]);
+
+  const { setError, removeError, getErrorMessageByFieldName } = UseErrors();
 
   function handleNameChange(event) {
     setName(event.target.value);
 
     if (!event.target.value) {
-      setErrors((prevState) => [
-        ...prevState,
-        { field: 'name', message: 'nome é obrigatório' },
-      ]);
+      setError({ field: 'name', message: 'nome é obrigatório' });
     } else {
-      setErrors((prevState) => prevState.filter(
-        (error) => error.field !== 'name',
-      ));
+      removeError('name');
     }
   }
 
@@ -33,26 +30,12 @@ export default function ContactForm({ buttonLabel }) {
     setEmail(event.target.value);
 
     if (event.target.value && !isEmailValid(event.target.value)) {
-      const errorAlreadyExists = errors.find(
-        (error) => error.field === 'email',
-      );
-      if (errorAlreadyExists) {
-        return;
-      }
-
-      setErrors((prevState) => [
-        ...prevState,
+      setError(
         { field: 'email', message: 'Email inválido' },
-      ]);
+      );
     } else {
-      setErrors((prevState) => prevState.filter(
-        (error) => error.field !== 'email',
-      ));
+      removeError('email');
     }
-  }
-
-  function getErrorMessageByFieldName(fieldname) {
-    return errors.find((error) => error.field === fieldname)?.message;
   }
 
   function handleSubmit(event) {
