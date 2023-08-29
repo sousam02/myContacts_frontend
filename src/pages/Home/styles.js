@@ -5,7 +5,7 @@ export const Container = styled.div`
     position: relative;
 `;
 
-export const InputSearchContainer = styled.div`
+export const InputSearchContainer = styled.header`
     width: 100%;
 
     input {
@@ -50,11 +50,9 @@ export const Header = styled.header`
     }
 `;
 
-export const ListContainer = styled.div`
+export const ListHeader = styled.div`
     margin-top: 24px;
-
-    header {
-        margin-bottom: 16px;
+    margin-bottom: 16px;
         button {
             background: transparent;
             border: none;
@@ -67,7 +65,6 @@ export const ListContainer = styled.div`
             margin-right: 8px;
             color: ${({ theme }) => theme.colors.primary.main};
         }
-    }
 `;
 
 export const Card = styled.div`
