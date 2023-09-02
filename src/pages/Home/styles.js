@@ -50,7 +50,7 @@ export const Header = styled.header`
     }
 `;
 
-export const ListHeader = styled.div`
+export const ListHeader = styled.header`
     margin-top: 24px;
     margin-bottom: 16px;
         button {
@@ -64,6 +64,15 @@ export const ListHeader = styled.div`
             font-weight: bold;
             margin-right: 8px;
             color: ${({ theme }) => theme.colors.primary.main};
+        }
+
+        img {
+            transform: ${({ orderBy }) => (orderBy === 'asc' ? 'rotate(180deg)' : 'rotate(0)')};
+
+            transition: transform 0.2s ease-in;
+
+
+
         }
 `;
 
