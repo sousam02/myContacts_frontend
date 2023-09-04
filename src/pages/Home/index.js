@@ -15,28 +15,32 @@ export default function Home() {
   const [contacts, setContacts] = useState([]);
   const [orderBy, setOrderBy] = useState('asc');
   const [searchTerm, setSearchTerm] = useState('');
-  const [isLoading, setIsLoading] = useState([true]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const filteredContacts = contacts.filter(
     (contact) => contact.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
   useEffect(() => {
-    setIsLoading(true);
+    async function loadContacts() {
+      try {
+        setIsLoading(true);
 
-    fetch(`http://192.168.0.10:3001/contacts?orderBy=${orderBy}`, {})
-      .then(async (response) => {
+        const response = await fetch(
+          `http://localhost:3001/contacts?orderBy=${orderBy}`,
+        );
+
         await delay(500);
 
         const json = await response.json();
         setContacts(json);
-      })
-      .catch((error) => {
-        console.log(error);
-      })
-      .finally(() => {
+      } catch (error) {
+        console.log('erro: ', error);
+      } finally {
         setIsLoading(false);
-      });
+      }
+    }
+    loadContacts();
   }, [orderBy]);
 
   function handleToggleOrderBy() {
