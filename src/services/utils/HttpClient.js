@@ -1,4 +1,5 @@
 import delay from '../../utils/delay';
+import APIError from '../../errors/APIError';
 
 class HttpClient {
   constructor(baseURL) {
@@ -12,12 +13,19 @@ class HttpClient {
       `${this.baseURL}${path}`,
     );
 
-    const body = await response.json();
+    let body = null;
+
+    const contentType = response.headers.get('Content-Type');
+
+    if (contentType.includes('application/json')) {
+      body = await response.json();
+    }
 
     if (response.ok) {
       return body;
     }
-    throw new Error(`${response.status} - ${body.error}`);
+
+    throw new APIError(response, body);
   }
 }
 
