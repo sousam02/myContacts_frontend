@@ -10,7 +10,6 @@ export default function Loader({ isLoading }) {
     ReactDOM.createPortal(
       <Overlay>
         <div className="loader" />
-        Hello
       </Overlay>,
       document.getElementById('loader-root'),
     )

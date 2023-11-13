@@ -1,12 +1,21 @@
 import { Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import {
-  Container, Header, ListHeader, Card, InputSearchContainer, ErrorContainer,
+  Container,
+  Header,
+  ListHeader,
+  Card,
+  InputSearchContainer,
+  ErrorContainer,
+  EmptyListContainer,
+  SearchNotFoundContainer,
 } from './styles';
 import arrow from '../../assets/images/icons/arrow.svg';
 import trash from '../../assets/images/icons/trash.svg';
 import edit from '../../assets/images/icons/edit.svg';
 import sad from '../../assets/images/icons/sad.svg';
+import emptyBox from '../../assets/images/icons/empty-box.svg';
+import magnifierQuestion from '../../assets/images/icons/magnifier-question.svg';
 
 import Loader from '../../components/Loader';
 import Button from '../../components/Button';
@@ -24,7 +33,7 @@ export default function Home() {
     (contact) => contact.name.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
-  async function loadContacts() {
+  const loadContacts = useCallback(async () => {
     try {
       setIsLoading(true);
 
@@ -37,10 +46,11 @@ export default function Home() {
     } finally {
       setIsLoading(false);
     }
-  }
+  }, [orderBy]);
+
   useEffect(() => {
     loadContacts();
-  }, [orderBy]);
+  }, [orderBy, loadContacts]);
 
   function handleToggleOrderBy() {
     setOrderBy((prevState) => (prevState === 'asc' ? 'desc' : 'asc'));
@@ -57,16 +67,30 @@ export default function Home() {
   return (
     <Container>
       <Loader isLoading={isLoading} />
-      <InputSearchContainer>
-        <input
-          value={searchTerm}
-          type="text"
-          placeholder="Pesquise pelo nome"
-          onChange={handleChangeSearchTerm}
-        />
-      </InputSearchContainer>
-      <Header hasError={hasError}>
-        {!hasError && (
+      {contacts.length > 0 && (
+        <InputSearchContainer>
+          <input
+            value={searchTerm}
+            type="text"
+            placeholder="Pesquise pelo nome"
+            onChange={handleChangeSearchTerm}
+          />
+        </InputSearchContainer>
+      )}
+
+      <Header
+        justifyContent={
+            // eslint-disable-next-line no-nested-ternary
+            hasError
+              ? 'flex-end'
+              : (
+                contacts.length > 0
+                  ? 'space-between'
+                  : 'center'
+              )
+        }
+      >
+        {(!hasError && !!contacts.length > 0) && (
           <strong>
             {filteredContacts.length}
             {filteredContacts.length === 1 ? ' Contato' : ' Contatos'}
@@ -90,14 +114,43 @@ export default function Home() {
       )}
       {!hasError && (
         <>
-          <ListHeader orderBy={orderBy}>
-            {filteredContacts.length > 0 && (
-            <button type="button" onClick={handleToggleOrderBy}>
-              <span>Nome</span>
-              <img src={arrow} alt="arrow" />
-            </button>
+            {(contacts.length < 1 && !isLoading) && (
+            <EmptyListContainer>
+              <img src={emptyBox} alt="empty-box" />
+              <p>
+                Você ainda não tem nenhum contato cadastrado!
+                Clique no botão
+                {' '}
+                <strong> &quot;Novo contato&quot; </strong>
+                {' '}
+                acima para cadastrar o seu primeiro!
+              </p>
+            </EmptyListContainer>
             )}
-          </ListHeader>
+
+            {(contacts.length > 0 && filteredContacts.length < 1) && (
+            <SearchNotFoundContainer>
+              <img src={magnifierQuestion} alt="magnifier-question" />
+              <span>
+                Nenhum resultado foi encontrado para
+                {' '}
+                <strong>
+                  &quot;
+                  {searchTerm}
+                  &quot;
+                </strong>
+              </span>
+            </SearchNotFoundContainer>
+            )}
+
+            {filteredContacts.length > 0 && (
+            <ListHeader orderBy={orderBy}>
+              <button type="button" onClick={handleToggleOrderBy}>
+                <span>Nome</span>
+                <img src={arrow} alt="arrow" />
+              </button>
+            </ListHeader>
+            )}
 
           {filteredContacts.map((contact) => (
             <Card key={contact.id}>
