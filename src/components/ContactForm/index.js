@@ -9,7 +9,6 @@ import isEmailValid from '../../utils/isEmailValid';
 import UseErrors from '../../hooks/useErrors';
 import formatPhone from '../../utils/formatPhone';
 import CategoriesService from '../../services/CategoriesService';
-import Spinner from '../Spinner';
 
 export default function ContactForm({ buttonLabel, onSubmit }) {
   const [name, setName] = useState('');
@@ -135,9 +134,8 @@ export default function ContactForm({ buttonLabel, onSubmit }) {
       </FormGroup>
 
       <ButtonContainer>
-        <Button type="submit" disabled={!isFormValid || isSubmitting}>
-          {!isSubmitting && buttonLabel}
-          {isSubmitting && <Spinner size={16} />}
+        <Button type="submit" disabled={!isFormValid || isSubmitting} isLoading={isSubmitting}>
+          {buttonLabel}
 
         </Button>
       </ButtonContainer>
